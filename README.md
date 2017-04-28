@@ -7,5 +7,5 @@ This To-Do List is a training application for me, the main purpose is that you c
 Cette "To-Do List" est une application d'entrainement pour moi, le principal but est de pouvoir ajouter de multiple tâche (9 max pour le moment) les marquer comme complétées et les supprimer. Vous avez aussi la possibilité de changer les couleurs, le langage et de vider la liste. Les tâches, les couleurs et la position de la fenêtre sont sauvegardées de cette façon il est inutile de la replacer à chaque lancement. Je vais certainement faire des mises à jour supplémantaire alors restez à l'écoute :D
 
 <p align="center">
-  <img src="https://img4.hostingpics.net/pics/322586todolist.png">
+  <img src="https://img4.hostingpics.net/pics/856456todolist.png">
 </p>
