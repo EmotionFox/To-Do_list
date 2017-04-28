@@ -1,6 +1,6 @@
 package emotion.fr.utils;
 
-public final class Localization
+public abstract class Localization
 {
 	private static final String[] lang_fr =
 	{ "Ajouter une nouvelle tâche", "Paramètre", "Vider la liste", "Langue: Français", "Réinitialiser les couleurs", "Retour" };
@@ -16,18 +16,18 @@ public final class Localization
 	
 	public static final void setLanguage(String newLang)
 	{
-		if(newLang.equals("ENGLISH"))
-			lang = Language.EN;
-		else
+		if(newLang.equals("FRENCH"))
 			lang = Language.FR;
+		else
+			lang = Language.EN;
 	}
 
 	public static final String[] getLocalization()
 	{
-		if (lang == Language.EN)
-			return lang_en;
-		else
+		if (lang == Language.FR)
 			return lang_fr;
+		else
+			return lang_en;
 	}
 
 	public static final Language getLanguage()
@@ -39,16 +39,16 @@ public final class Localization
 	{
 		FR("FRENCH"), EN("ENGLISH");
 
-		private String desc;
+		private String name;
 
 		private Language(String desc)
 		{
-			this.desc = desc;
+			this.name = desc;
 		}
 
 		public String getDescription()
 		{
-			return this.desc;
+			return this.name;
 		}
 	}
 }
