@@ -5,14 +5,18 @@ import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.JViewport;
 
 import emotion.fr.component.MButton;
 import emotion.fr.component.TPanel;
@@ -22,6 +26,8 @@ public class MainPanel extends JPanel
 	private static final long serialVersionUID = 4876062610504962855L;
 
 	private JPanel taskPanel = new JPanel();
+	private JViewport viewport = new JViewport();
+	private int maxTask = 25;
 
 	public MButton addButton;
 	public MButton settingButton;
@@ -54,9 +60,16 @@ public class MainPanel extends JPanel
 		field.setVisible(false);
 		field.setFocusable(true);
 
-		taskPanel.setBounds(0, 50, this.getWidth(), 400);
+		taskPanel.setPreferredSize(new Dimension(this.getWidth(), 1010));
+		taskPanel.setBounds(0, 0, this.getWidth(), 1010);
 		taskPanel.setOpaque(false);
 		taskPanel.setLayout(null);
+
+		viewport.setBounds(0, 50, this.getWidth(), 400);
+		viewport.setFocusable(true);
+		viewport.setOpaque(false);
+		viewport.addMouseWheelListener(new WheelListener());
+		viewport.setView(taskPanel);
 
 		if (baseFrame.data.getSize() > 0)
 			refreshTask();
@@ -72,13 +85,13 @@ public class MainPanel extends JPanel
 		bottomPanel.add(settingButton);
 
 		this.add(topPanel);
-		this.add(taskPanel);
+		this.add(viewport);
 		this.add(bottomPanel);
 	}
 
 	public void update()
 	{
-		if (field.isVisible() || baseFrame.data.getSize() >= 9)
+		if (field.isVisible() || baseFrame.data.getSize() >= maxTask)
 		{
 			field.grabFocus();
 			addButton.setEnabled(false);
@@ -91,7 +104,7 @@ public class MainPanel extends JPanel
 
 	public void addTask()
 	{
-		int pos = 25 + (40 * baseFrame.data.getSize());
+		int pos = 10 + (40 * baseFrame.data.getSize());
 
 		field.setText("");
 		field.setEditable(true);
@@ -100,6 +113,11 @@ public class MainPanel extends JPanel
 		TPanel panel = new TPanel(baseFrame, baseFrame.data.getSize());
 		panel.setBounds(0, pos, this.getWidth(), 30);
 		panel.add(field);
+
+		if ((panel.getY() + panel.getHeight()) > (viewport.getViewPosition().getY() + viewport.getHeight()))
+		{
+			viewport.setViewPosition(new Point(0, ((panel.getY() + panel.getHeight()) + 10) - viewport.getHeight()));
+		}
 
 		taskPanel.add(panel);
 	}
@@ -110,7 +128,7 @@ public class MainPanel extends JPanel
 
 		for (int i = 0; i < baseFrame.data.getSize(); i++)
 		{
-			int pos = 25 + (40 * i);
+			int pos = 10 + (40 * i);
 
 			TPanel panel = baseFrame.data.get(i);
 			panel.setIndex(i);
@@ -185,5 +203,23 @@ public class MainPanel extends JPanel
 		@Override
 		public void keyTyped(KeyEvent e)
 		{}
+	}
+
+	public class WheelListener implements MouseWheelListener
+	{
+		private int yPos = 0;
+
+		@Override
+		public void mouseWheelMoved(MouseWheelEvent e)
+		{
+			yPos += e.getWheelRotation() * 15;
+
+			if (yPos + viewport.getHeight() > 1000)
+				yPos = (int) (viewport.getViewSize().getHeight() - viewport.getHeight());
+			else if (yPos < 0)
+				yPos = 0;
+
+			viewport.setViewPosition(new Point(0, yPos));
+		}
 	}
 }

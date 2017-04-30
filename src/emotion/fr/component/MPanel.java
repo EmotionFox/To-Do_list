@@ -9,6 +9,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JViewport;
 
+//Moving Panel
 public class MPanel extends JPanel
 {
 	private static final long serialVersionUID = 1L;
@@ -26,7 +27,7 @@ public class MPanel extends JPanel
 		firstLabel.setHorizontalAlignment(JLabel.CENTER);
 		firstLabel.setFont(new Font("Open Sans", Font.PLAIN, 18));
 		firstLabel.setForeground(Color.white);
-		
+
 		secondLabel.setHorizontalAlignment(JLabel.CENTER);
 		secondLabel.setFont(new Font("Open Sans", Font.PLAIN, 18));
 		secondLabel.setForeground(Color.white);
@@ -53,7 +54,7 @@ public class MPanel extends JPanel
 		firstLabel.setText("  " + str + "  ");
 		secondLabel.setText("  " + str + "  ");
 	}
-	
+
 	private boolean first = true;
 	private boolean second = false;
 	private boolean grab = false;
