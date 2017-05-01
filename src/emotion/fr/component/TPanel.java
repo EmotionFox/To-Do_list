@@ -6,8 +6,12 @@ import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
+import javax.swing.border.Border;
+import javax.swing.plaf.ColorUIResource;
 
 import emotion.fr.init.BaseFrame;
 import emotion.fr.init.MainPanel;
@@ -33,6 +37,10 @@ public class TPanel extends JPanel implements ActionListener
 
 		this.setLayout(null);
 
+		UIManager.put("ToolTip.background", new ColorUIResource(255, 255, 255));
+		Border border = BorderFactory.createLineBorder(new Color(76, 79, 83));
+		UIManager.put("ToolTip.border", border);
+		
 		label.setFont(new Font("Open Sans", Font.PLAIN, 18));
 		label.setHorizontalAlignment(JLabel.CENTER);
 		label.setForeground(Color.white);

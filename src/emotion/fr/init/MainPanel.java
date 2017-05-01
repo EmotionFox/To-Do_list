@@ -1,5 +1,6 @@
 package emotion.fr.init;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GradientPaint;
@@ -60,8 +61,8 @@ public class MainPanel extends JPanel
 		field.setVisible(false);
 		field.setFocusable(true);
 
-		taskPanel.setPreferredSize(new Dimension(this.getWidth(), 1010));
-		taskPanel.setBounds(0, 0, this.getWidth(), 1010);
+		taskPanel.setPreferredSize(new Dimension(this.getWidth(), 1030));
+		taskPanel.setBounds(0, 0, this.getWidth(), 1030);
 		taskPanel.setOpaque(false);
 		taskPanel.setLayout(null);
 
@@ -114,9 +115,9 @@ public class MainPanel extends JPanel
 		panel.setBounds(0, pos, this.getWidth(), 30);
 		panel.add(field);
 
-		if ((panel.getY() + panel.getHeight()) > (viewport.getViewPosition().getY() + viewport.getHeight()))
+		if ((panel.getY() + panel.getHeight() + 30) > (viewport.getViewPosition().getY() + viewport.getHeight()))
 		{
-			viewport.setViewPosition(new Point(0, ((panel.getY() + panel.getHeight()) + 10) - viewport.getHeight()));
+			viewport.setViewPosition(new Point(0, ((panel.getY() + panel.getHeight()) + 30) - viewport.getHeight()));
 		}
 
 		taskPanel.add(panel);
@@ -152,6 +153,13 @@ public class MainPanel extends JPanel
 
 		g2d.setPaint(paint);
 		g2d.fillRect(0, 0, this.getWidth(), this.getHeight());
+		
+		g.setColor(Color.white);
+		g.fillRect(10, 438, this.getWidth() - 20, 5);
+		g.fillRect(2, 432, 16, 16);
+		g.fillRect(282, 432, 16, 16);
+		g.setColor(new Color(0, 0, 0, 100));
+		g.fillRect(2 + (int)(viewport.getViewPosition().getY() / 630 * 280), 432, 16, 16);
 	}
 
 	private class ButtonListener implements ActionListener
@@ -214,7 +222,7 @@ public class MainPanel extends JPanel
 		{
 			yPos += e.getWheelRotation() * 15;
 
-			if (yPos + viewport.getHeight() > 1000)
+			if (yPos + viewport.getHeight() > 1030)
 				yPos = (int) (viewport.getViewSize().getHeight() - viewport.getHeight());
 			else if (yPos < 0)
 				yPos = 0;
