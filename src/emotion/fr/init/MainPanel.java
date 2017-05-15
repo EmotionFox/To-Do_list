@@ -11,6 +11,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
@@ -21,8 +23,10 @@ import javax.swing.JViewport;
 
 import emotion.fr.component.MButton;
 import emotion.fr.component.TPanel;
+import emotion.fr.utils.FrameManager;
+import emotion.fr.utils.TextManager;
 
-public class MainPanel extends JPanel
+public class MainPanel extends JPanel implements Update
 {
 	private static final long serialVersionUID = 4876062610504962855L;
 
@@ -34,8 +38,13 @@ public class MainPanel extends JPanel
 	public MButton settingButton;
 	public JTextField field = new JTextField();
 
-	private ButtonListener buttonListener = new ButtonListener();
+	private ListenerAction buttonListener = new ListenerAction();
 	private BaseFrame baseFrame;
+
+	private boolean leftMouse = false;
+	private boolean init = true;
+	private int sourceX = 0;
+	private int sourceY = 0;
 
 	public MainPanel(BaseFrame baseFrame)
 	{
@@ -45,18 +54,18 @@ public class MainPanel extends JPanel
 		this.setPreferredSize(new Dimension(300, 500));
 		this.setSize(300, 500);
 
-		addButton = new MButton(baseFrame, baseFrame.localization[0]);
+		addButton = new MButton(baseFrame, new Dimension(280, 30));
 		addButton.addActionListener(buttonListener);
 		addButton.setBounds(10, 10, 280, 30);
 
-		settingButton = new MButton(baseFrame, baseFrame.localization[1]);
+		settingButton = new MButton(baseFrame, new Dimension(280, 30));
 		settingButton.addActionListener(buttonListener);
 		settingButton.setBounds(10, 10, 280, 30);
 
 		field.setBounds(0, 0, this.getWidth(), 30);
 		field.setFont(new Font("Open Sans", Font.PLAIN, 18));
 		field.setHorizontalAlignment(JLabel.CENTER);
-		field.addKeyListener(new keyboardListener());
+		field.addKeyListener(new ListenerKey());
 		field.setBorder(null);
 		field.setVisible(false);
 		field.setFocusable(true);
@@ -65,11 +74,12 @@ public class MainPanel extends JPanel
 		taskPanel.setBounds(0, 0, this.getWidth(), 1030);
 		taskPanel.setOpaque(false);
 		taskPanel.setLayout(null);
+		taskPanel.addMouseListener(new ListenerMouse());
 
 		viewport.setBounds(0, 50, this.getWidth(), 400);
 		viewport.setFocusable(true);
 		viewport.setOpaque(false);
-		viewport.addMouseWheelListener(new WheelListener());
+		viewport.addMouseWheelListener(new ListenerMouseWheel());
 		viewport.setView(taskPanel);
 
 		if (baseFrame.data.getSize() > 0)
@@ -77,11 +87,13 @@ public class MainPanel extends JPanel
 
 		JPanel topPanel = new JPanel();
 		topPanel.setBounds(0, 0, this.getWidth(), 50);
+		topPanel.setBackground(Color.white);
 		topPanel.setLayout(null);
 		topPanel.add(addButton);
 
 		JPanel bottomPanel = new JPanel();
 		bottomPanel.setBounds(0, 450, this.getWidth(), 50);
+		bottomPanel.setBackground(Color.white);
 		bottomPanel.setLayout(null);
 		bottomPanel.add(settingButton);
 
@@ -92,6 +104,9 @@ public class MainPanel extends JPanel
 
 	public void update()
 	{
+		addButton.setText(TextManager.getText(0));
+		settingButton.setText(TextManager.getText(1));
+		
 		if (field.isVisible() || baseFrame.data.getSize() >= maxTask)
 		{
 			field.grabFocus();
@@ -101,6 +116,32 @@ public class MainPanel extends JPanel
 		{
 			addButton.setEnabled(true);
 		}
+
+		if (this.leftMouse)
+		{
+			int posX = baseFrame.getX();
+			int posY = baseFrame.getY();
+
+			if (init)
+			{
+				sourceX = (int) this.getMousePosition().getX();
+				sourceY = (int) this.getMousePosition().getY();
+				init = false;
+			}
+
+			try
+			{
+				int mouseX = (int) this.getMousePosition().getX();
+				int mouseY = (int) this.getMousePosition().getY();
+
+				baseFrame.setLocation((posX - sourceX) + mouseX, (posY - sourceY) + mouseY);
+			} catch (NullPointerException npe)
+			{
+				leftMouse = false;
+			}
+		}
+		else
+			init = true;
 	}
 
 	public void addTask()
@@ -115,10 +156,8 @@ public class MainPanel extends JPanel
 		panel.setBounds(0, pos, this.getWidth(), 30);
 		panel.add(field);
 
-		if ((panel.getY() + panel.getHeight() + 30) > (viewport.getViewPosition().getY() + viewport.getHeight()))
-		{
-			viewport.setViewPosition(new Point(0, ((panel.getY() + panel.getHeight()) + 30) - viewport.getHeight()));
-		}
+		if ((panel.getY() + panel.getHeight() + 20) > (viewport.getViewPosition().getY() + viewport.getHeight()))
+			viewport.setViewPosition(new Point(0, ((panel.getY() + panel.getHeight()) + 20) - viewport.getHeight()));
 
 		taskPanel.add(panel);
 	}
@@ -153,16 +192,14 @@ public class MainPanel extends JPanel
 
 		g2d.setPaint(paint);
 		g2d.fillRect(0, 0, this.getWidth(), this.getHeight());
-		
+
 		g.setColor(Color.white);
 		g.fillRect(10, 438, this.getWidth() - 20, 5);
-		g.fillRect(2, 432, 16, 16);
-		g.fillRect(282, 432, 16, 16);
 		g.setColor(new Color(0, 0, 0, 100));
-		g.fillRect(2 + (int)(viewport.getViewPosition().getY() / 630 * 280), 432, 16, 16);
+		g.fillRect((int) (viewport.getViewPosition().getY() / 630 * 280), 430, 20, 20);
 	}
 
-	private class ButtonListener implements ActionListener
+	private class ListenerAction implements ActionListener
 	{
 		@Override
 		public void actionPerformed(ActionEvent e)
@@ -174,7 +211,7 @@ public class MainPanel extends JPanel
 		}
 	}
 
-	private class keyboardListener implements KeyListener
+	private class ListenerKey implements KeyListener
 	{
 		@Override
 		public void keyPressed(KeyEvent e)
@@ -213,7 +250,40 @@ public class MainPanel extends JPanel
 		{}
 	}
 
-	public class WheelListener implements MouseWheelListener
+	public class ListenerMouse implements MouseListener
+	{
+		@Override
+		public void mouseClicked(MouseEvent e)
+		{}
+
+		@Override
+		public void mouseEntered(MouseEvent e)
+		{}
+
+		@Override
+		public void mouseExited(MouseEvent e)
+		{}
+
+		@Override
+		public void mousePressed(MouseEvent e)
+		{
+			if (e.getButton() == 1)
+				leftMouse = true;
+			if (e.getButton() == 3)
+			{
+				FrameManager.removeFrame(baseFrame);
+			}
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e)
+		{
+			if (e.getButton() == 1)
+				leftMouse = false;
+		}
+	}
+
+	public class ListenerMouseWheel implements MouseWheelListener
 	{
 		private int yPos = 0;
 

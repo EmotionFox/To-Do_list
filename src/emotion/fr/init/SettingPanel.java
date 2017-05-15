@@ -1,6 +1,7 @@
 package emotion.fr.init;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -11,15 +12,18 @@ import javax.swing.JPanel;
 
 import emotion.fr.component.CButton;
 import emotion.fr.component.MButton;
-import emotion.fr.utils.Localization;
+import emotion.fr.utils.FrameManager;
+import emotion.fr.utils.TextManager;
 
-public class SettingPanel extends JPanel
+public class SettingPanel extends JPanel implements Update
 {
 	private static final long serialVersionUID = -6523309950648625927L;
 
 	public MButton clearButton;
-	public MButton defaultButton;
+	public MButton newButton;
+	public MButton deleteButton;
 	public MButton languageButton;
+	public MButton defaultButton;
 	public MButton returnButton;
 
 	private BaseFrame baseFrame;
@@ -30,23 +34,33 @@ public class SettingPanel extends JPanel
 		this.baseFrame = baseFrame;
 		this.setLayout(null);
 
-		clearButton = new MButton(baseFrame, baseFrame.localization[2]);
+		clearButton = new MButton(baseFrame, new Dimension(280, 30));
 		clearButton.addActionListener(listener);
 		clearButton.setBounds(10, 10, 280, 30);
-		languageButton = new MButton(baseFrame, baseFrame.localization[3]);
+		newButton = new MButton(baseFrame, new Dimension(280, 30));
+		newButton.addActionListener(listener);
+		newButton.setBounds(10, 50, 280, 30);
+		deleteButton = new MButton(baseFrame, new Dimension(280, 30));
+		deleteButton.addActionListener(listener);
+		deleteButton.setBounds(10, 90, 280, 30);
+		deleteButton.setEnabled(false);
+		languageButton = new MButton(baseFrame, new Dimension(280, 30));
 		languageButton.addActionListener(listener);
-		languageButton.setBounds(10, 50, 280, 30);
-		defaultButton = new MButton(baseFrame, baseFrame.localization[4]);
+		languageButton.setBounds(10, 130, 280, 30);
+		defaultButton = new MButton(baseFrame, new Dimension(280, 30));
 		defaultButton.addActionListener(listener);
-		defaultButton.setBounds(10, 90, 280, 30);
-		returnButton = new MButton(baseFrame, baseFrame.localization[5]);
+		defaultButton.setBounds(10, 170, 280, 30);
+		returnButton = new MButton(baseFrame, new Dimension(280, 30));
 		returnButton.addActionListener(listener);
 		returnButton.setBounds(10, 10, 280, 30);
 
 		JPanel topPanel = new JPanel();
-		topPanel.setBounds(0, 0, 300, 130);
+		topPanel.setBounds(0, 0, 300, 210);
+		topPanel.setBackground(Color.white);
 		topPanel.setLayout(null);
 		topPanel.add(clearButton);
+		topPanel.add(newButton);
+		topPanel.add(deleteButton);
 		topPanel.add(languageButton);
 		topPanel.add(defaultButton);
 
@@ -66,7 +80,7 @@ public class SettingPanel extends JPanel
 		purpleButton.setBounds(245, 0, 50, 50);
 
 		JPanel buttonPanel = new JPanel();
-		buttonPanel.setBounds(0, 135, 300, 50);
+		buttonPanel.setBounds(0, 215, 300, 50);
 		buttonPanel.setOpaque(false);
 		buttonPanel.setLayout(null);
 		buttonPanel.add(orangeButton);
@@ -77,12 +91,28 @@ public class SettingPanel extends JPanel
 
 		JPanel bottomPanel = new JPanel();
 		bottomPanel.setBounds(0, 450, 300, 50);
+		bottomPanel.setBackground(Color.white);
 		bottomPanel.setLayout(null);
 		bottomPanel.add(returnButton);
 
 		this.add(topPanel);
 		this.add(buttonPanel);
 		this.add(bottomPanel);
+	}
+
+	public void update()
+	{
+		if (baseFrame.getCurrentInstance() > 1 && baseFrame.getCurrentInstance() == baseFrame.getInstance())
+			deleteButton.setEnabled(true);
+		else
+			deleteButton.setEnabled(false);
+
+		clearButton.setText(TextManager.getText(2));
+		newButton.setText(TextManager.getText(3));
+		deleteButton.setText(TextManager.getText(4));
+		languageButton.setText(TextManager.getText(5));
+		defaultButton.setText(TextManager.getText(6));
+		returnButton.setText(TextManager.getText(7));
 	}
 
 	@Override
@@ -101,17 +131,25 @@ public class SettingPanel extends JPanel
 		{
 			if (e.getSource() == clearButton)
 				baseFrame.data.clear();
-			else if (e.getSource() == defaultButton)
-				baseFrame.setColors(new Color(0xd65555), new Color(0x953b3b));
+			else if (e.getSource() == newButton)
+			{
+				FrameManager.addFrame();
+
+				if (baseFrame.getInstance() == 0)
+					baseFrame.data.save();
+			}
+			else if (e.getSource() == deleteButton)
+			{
+				FrameManager.removeList(baseFrame);
+			}
 			else if (e.getSource() == languageButton)
 			{
-				if (Localization.getLanguage() == Localization.Language.EN)
-					Localization.setLanguage(Localization.Language.FR);
-				else
-					Localization.setLanguage(Localization.Language.EN);
-
-				baseFrame.refreshLocalization();
-				baseFrame.switchPanel(new SettingPanel(baseFrame));
+				TextManager.switchLanguage();
+			}
+			else if (e.getSource() == defaultButton)
+			{
+				baseFrame.setColors(new Color(0xd65555), new Color(0x953b3b));
+				baseFrame.data.save();
 			}
 			else if (e.getSource() == returnButton)
 				baseFrame.switchPanel(new MainPanel(baseFrame));

@@ -1,6 +1,7 @@
 package emotion.fr.component;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -19,26 +20,33 @@ public class MButton extends JButton implements MouseListener
 	private static final long serialVersionUID = -1579343309712601032L;
 
 	private Color color;
-	
+
+	private JLabel label;
 	private BaseFrame baseFrame;
 
-	public MButton(BaseFrame baseFrame, String text)
+	public MButton(BaseFrame baseFrame, Dimension dim)
 	{
 		this.baseFrame = baseFrame;
 		this.color = baseFrame.getPrimaryColor();
 
+		this.setSize(dim);
 		this.setLayout(null);
 		this.setBorderPainted(false);
 		this.setOpaque(false);
 		this.addMouseListener(this);
 
-		JLabel label = new JLabel(text);
+		label = new JLabel();
 		label.setFont(new Font("Open Sans", Font.PLAIN, 16));
 		label.setHorizontalAlignment(JLabel.CENTER);
 		label.setForeground(Color.white);
-		label.setBounds(0, 0, 280, 30);
+		label.setSize(dim);
 
 		this.add(label);
+	}
+
+	public void setText(String text)
+	{
+		label.setText(text);
 	}
 
 	@Override
@@ -51,7 +59,10 @@ public class MButton extends JButton implements MouseListener
 		Graphics2D g2d = (Graphics2D) g;
 
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g2d.setColor(color);
+		if (this.isEnabled())
+			g2d.setColor(color);
+		else
+			g2d.setColor(new Color(0, 0, 0, 100));
 		g2d.fillRoundRect(0, 0, this.getWidth(), this.getHeight(), 10, 10);
 	}
 

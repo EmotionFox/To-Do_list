@@ -1,7 +1,9 @@
 package emotion.fr.component;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,7 +12,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
-import javax.swing.border.Border;
 import javax.swing.plaf.ColorUIResource;
 
 import emotion.fr.init.BaseFrame;
@@ -38,10 +39,12 @@ public class TPanel extends JPanel implements ActionListener
 		this.setLayout(null);
 
 		UIManager.put("ToolTip.background", new ColorUIResource(255, 255, 255));
-		Border border = BorderFactory.createLineBorder(new Color(76, 79, 83));
-		UIManager.put("ToolTip.border", border);
-		
+		UIManager.put("ToolTip.border", BorderFactory.createLineBorder(new Color(0, 0, 0)));
+		UIManager.put("ToolTip.font", new Font("Open Sans", Font.PLAIN, 16));
+
 		label.setFont(new Font("Open Sans", Font.PLAIN, 18));
+		label.setPreferredSize(new Dimension(240, 30));
+		label.setSize(240, 30);
 		label.setHorizontalAlignment(JLabel.CENTER);
 		label.setForeground(Color.white);
 		label.setBounds(30, 0, 240, 30);
@@ -64,7 +67,11 @@ public class TPanel extends JPanel implements ActionListener
 		this.text = str;
 
 		label.setText(str);
-		label.setToolTipText(str);
+
+		FontMetrics metric = label.getFontMetrics(new Font("Open Sans", Font.PLAIN, 18));
+		
+		if (metric.stringWidth(str) > label.getWidth())
+			label.setToolTipText(str);
 
 		this.add(removeButton, 0);
 		this.add(toggleButton, 1);

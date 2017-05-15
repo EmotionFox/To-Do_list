@@ -21,6 +21,7 @@ public class Data
 {
 	private List<TPanel> list = new ArrayList<TPanel>();
 	private Path source;
+	
 	private BaseFrame baseFrame;
 
 	public Data(BaseFrame baseFrame, String str)
@@ -79,8 +80,8 @@ public class Data
 			int secondary = dis.readInt();
 
 			baseFrame.setColors(new Color(primary), new Color(secondary));
-			
-			Localization.setLanguage(dis.readUTF());
+
+			TextManager.setLanguage(dis.readUTF());
 
 			baseFrame.posX = dis.readInt();
 			baseFrame.posY = dis.readInt();
@@ -100,6 +101,8 @@ public class Data
 
 	public void save()
 	{
+		System.out.println("SAVING");
+		
 		try (OutputStream os = Files.newOutputStream(source); BufferedOutputStream bos = new BufferedOutputStream(os); DataOutputStream dos = new DataOutputStream(bos))
 		{
 			dos.writeInt(list.size());
@@ -116,7 +119,7 @@ public class Data
 			dos.writeInt(baseFrame.getPrimaryColor().getRGB());
 			dos.writeInt(baseFrame.getSecondaryColor().getRGB());
 
-			dos.writeUTF(Localization.getLanguage().getDescription());
+			dos.writeUTF(TextManager.getLanguage().getName());
 
 			dos.writeInt(baseFrame.getX());
 			dos.writeInt(baseFrame.getY());
