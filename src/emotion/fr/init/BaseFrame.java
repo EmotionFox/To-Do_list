@@ -2,6 +2,7 @@ package emotion.fr.init;
 
 import java.awt.Color;
 import java.awt.Image;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -50,6 +51,15 @@ public class BaseFrame extends JFrame
 		this.setContentPane(new MainPanel(this));
 		this.pack();
 		this.setVisible(true);
+	}
+
+	@Override
+	protected void processWindowEvent(WindowEvent e)
+	{
+		if (e.getID() == 201) // When closing
+			data.save();
+
+		super.processWindowEvent(e);
 	}
 
 	public Color getPrimaryColor()

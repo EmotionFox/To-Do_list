@@ -50,7 +50,7 @@ public abstract class FrameManager
 	{
 		frame.close();
 
-		if (frames.isEmpty())
+		if (frame.getInstance() == 0)
 			MainEmotion.stop();
 	}
 
