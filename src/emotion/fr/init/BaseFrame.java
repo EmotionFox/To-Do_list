@@ -10,6 +10,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import emotion.fr.utils.Data;
+import emotion.fr.utils.FrameManager;
 
 public class BaseFrame extends JFrame
 {
@@ -29,7 +30,7 @@ public class BaseFrame extends JFrame
 	{
 		instance++;
 		currentInstance = instance;
-		data = new Data(this, "./Task" + instance + ".bin");
+		data = new Data(this, "./ETDL/Task_" + instance + ".bin");
 
 		try
 		{
@@ -39,11 +40,9 @@ public class BaseFrame extends JFrame
 			e.printStackTrace();
 		}
 
-		this.setIconImage(image);
 		this.setTitle("To-Do List");
+		this.setIconImage(image);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		this.setLocationRelativeTo(null);
-		this.setLocation(posX, posY);
 		this.setAlwaysOnTop(true);
 		this.setResizable(false);
 		this.setUndecorated(true);
@@ -57,9 +56,10 @@ public class BaseFrame extends JFrame
 	protected void processWindowEvent(WindowEvent e)
 	{
 		if (e.getID() == 201) // When closing
+		{
 			data.save();
-
-		super.processWindowEvent(e);
+			FrameManager.removeFrame(this);
+		}
 	}
 
 	public Color getPrimaryColor()
@@ -113,9 +113,9 @@ public class BaseFrame extends JFrame
 
 	public void update()
 	{
-		if (this.getContentPane() instanceof Update)
+		if (this.getContentPane() instanceof HasUpdate)
 		{
-			Update updatablePanel = (Update) this.getContentPane();
+			HasUpdate updatablePanel = (HasUpdate) this.getContentPane();
 			updatablePanel.update();
 		}
 

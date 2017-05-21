@@ -21,13 +21,14 @@ public class Data
 {
 	private List<TPanel> list = new ArrayList<TPanel>();
 	private Path source;
-	
+
 	private BaseFrame baseFrame;
 
 	public Data(BaseFrame baseFrame, String str)
 	{
 		this.baseFrame = baseFrame;
-		source = Paths.get(str);
+		this.source = Paths.get(str);
+
 		if (source.toFile().exists())
 			reload();
 	}
@@ -54,11 +55,6 @@ public class Data
 		return list.get(index);
 	}
 
-	public List<TPanel> getList()
-	{
-		return list;
-	}
-
 	private void reload()
 	{
 		try (InputStream is = Files.newInputStream(source); BufferedInputStream bis = new BufferedInputStream(is); DataInputStream dis = new DataInputStream(bis))
@@ -80,11 +76,7 @@ public class Data
 			int secondary = dis.readInt();
 
 			baseFrame.setColors(new Color(primary), new Color(secondary));
-
-			TextManager.setLanguage(dis.readUTF());
-
-			baseFrame.posX = dis.readInt();
-			baseFrame.posY = dis.readInt();
+			baseFrame.setLocation(dis.readInt(), dis.readInt());
 
 			dis.close();
 		} catch (IOException e)
@@ -101,8 +93,6 @@ public class Data
 
 	public void save()
 	{
-		System.out.println("SAVING");
-		
 		try (OutputStream os = Files.newOutputStream(source); BufferedOutputStream bos = new BufferedOutputStream(os); DataOutputStream dos = new DataOutputStream(bos))
 		{
 			dos.writeInt(list.size());
@@ -118,9 +108,6 @@ public class Data
 
 			dos.writeInt(baseFrame.getPrimaryColor().getRGB());
 			dos.writeInt(baseFrame.getSecondaryColor().getRGB());
-
-			dos.writeUTF(TextManager.getLanguage().getName());
-
 			dos.writeInt(baseFrame.getX());
 			dos.writeInt(baseFrame.getY());
 

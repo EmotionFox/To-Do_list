@@ -2,7 +2,7 @@ package emotion.fr;
 
 import emotion.fr.utils.FrameManager;
 
-public class MainEmotion
+public class EmotionMain
 {
 	private static boolean stop = false;
 

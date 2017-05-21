@@ -3,16 +3,11 @@ package emotion.fr.utils;
 public abstract class TextManager
 {
 	private static final String[] lang_fr =
-	{ "Ajouter une nouvelle tâche", "Paramètre", "Vider la liste", "Nouvelle liste", "Supprimer la liste", "Langue: Français", "Réinitialiser les couleurs", "Retour" };
+	{ "Ajouter une nouvelle tâche", "Paramètre", "Vider la liste", "Nouvelle liste", "Supprimer la liste", "Langue: Français", "Réinitialiser les couleurs", "Priorisation: Désactivé", "Priorisation: Activé", "Créé par", "Cliquer ici pour être redirigé vers le site", "Retour" };
 	private static final String[] lang_en =
-	{ "Add a new task", "Setting", "Clear the list", "New list", "Delete the list", "Language: English", "Reset the colors", "Return" };
+	{ "Add a new task", "Setting", "Clear the list", "New list", "Delete the list", "Language: English", "Reset the colors", "Prioritization: Disabled", "Prioritization: Activated", "Created by", "Click here to be redirect to the site", "Return" };
 
 	private static Language lang = Language.EN;
-
-	public static final void setLanguage(Language newLang)
-	{
-		lang = newLang;
-	}
 
 	public static final void setLanguage(String newLang)
 	{

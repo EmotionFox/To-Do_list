@@ -11,21 +11,35 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 
-import emotion.fr.MainEmotion;
+import emotion.fr.EmotionMain;
 import emotion.fr.init.BaseFrame;
 
 public abstract class FrameManager
 {
 	private static List<BaseFrame> frames = new ArrayList<BaseFrame>();
-	private static Path source = Paths.get("./TaskSetting.bin");
+	private static Path source = Paths.get("./ETDL/TaskSetting.bin");
 
 	private static int extraList = 0;
 
 	public static void init()
 	{
+		Path path = Paths.get("./ETDL");
+
 		frames.add(new BaseFrame());
+
+		if (!path.toFile().exists())
+		{
+			try
+			{
+				Files.createDirectories(path);
+			} catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+		}
 
 		if (source.toFile().exists())
 			reload();
@@ -40,8 +54,17 @@ public abstract class FrameManager
 
 	public static void addExtra()
 	{
+		Path path;
+
 		for (int i = 0; i < extraList; i++)
 		{
+			path = Paths.get("./ETDL/Task_" + (2 + i) + ".bin");
+
+			if (!path.toFile().exists())
+			{
+				System.out.println("The list n°: " + (2 + i) + "; doesn't exist.");
+			}
+
 			frames.add(new BaseFrame());
 		}
 	}
@@ -51,12 +74,15 @@ public abstract class FrameManager
 		frame.close();
 
 		if (frame.getInstance() == 0)
-			MainEmotion.stop();
+		{
+			save();
+			EmotionMain.stop();
+		}
 	}
 
 	public static void removeList(BaseFrame frame)
 	{
-		Path source = Paths.get("./Task" + frame.getInstance() + ".bin");
+		Path source = Paths.get("./ETDL/Task_" + frame.getInstance() + ".bin");
 
 		frame.close();
 
@@ -69,10 +95,18 @@ public abstract class FrameManager
 
 	public static void update()
 	{
-		for (BaseFrame frame : frames)
+		List<BaseFrame> list = frames;
+
+		try
 		{
-			if (frame.isVisible())
-				frame.update();
+			for (BaseFrame frame : list)
+			{
+				if (frame.isVisible())
+					frame.update();
+			}
+		} catch (ConcurrentModificationException e)
+		{
+			return;
 		}
 	}
 

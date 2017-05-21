@@ -1,6 +1,6 @@
 package emotion.fr.init;
 
-public interface Update
+public interface HasUpdate
 {
 	public void update();
 }

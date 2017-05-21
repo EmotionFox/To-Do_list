@@ -16,6 +16,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -23,10 +24,9 @@ import javax.swing.JViewport;
 
 import emotion.fr.component.MButton;
 import emotion.fr.component.TPanel;
-import emotion.fr.utils.FrameManager;
 import emotion.fr.utils.TextManager;
 
-public class MainPanel extends JPanel implements Update
+public class MainPanel extends JPanel implements HasUpdate
 {
 	private static final long serialVersionUID = 4876062610504962855L;
 
@@ -36,9 +36,13 @@ public class MainPanel extends JPanel implements Update
 
 	public MButton addButton;
 	public MButton settingButton;
+
+	private JPanel topPanel = new JPanel();
+	private JPanel bottomPanel = new JPanel();
+
 	public JTextField field = new JTextField();
 
-	private ListenerAction buttonListener = new ListenerAction();
+	private MainListener listener = new MainListener();
 	private BaseFrame baseFrame;
 
 	private boolean leftMouse = false;
@@ -55,17 +59,17 @@ public class MainPanel extends JPanel implements Update
 		this.setSize(300, 500);
 
 		addButton = new MButton(baseFrame, new Dimension(280, 30));
-		addButton.addActionListener(buttonListener);
+		addButton.addActionListener(listener);
 		addButton.setBounds(10, 10, 280, 30);
 
 		settingButton = new MButton(baseFrame, new Dimension(280, 30));
-		settingButton.addActionListener(buttonListener);
+		settingButton.addActionListener(listener);
 		settingButton.setBounds(10, 10, 280, 30);
 
 		field.setBounds(0, 0, this.getWidth(), 30);
 		field.setFont(new Font("Open Sans", Font.PLAIN, 18));
 		field.setHorizontalAlignment(JLabel.CENTER);
-		field.addKeyListener(new ListenerKey());
+		field.addKeyListener(listener);
 		field.setBorder(null);
 		field.setVisible(false);
 		field.setFocusable(true);
@@ -74,24 +78,50 @@ public class MainPanel extends JPanel implements Update
 		taskPanel.setBounds(0, 0, this.getWidth(), 1030);
 		taskPanel.setOpaque(false);
 		taskPanel.setLayout(null);
-		taskPanel.addMouseListener(new ListenerMouse());
+
+		taskPanel.addMouseListener(new MouseListener()
+		{
+			@Override
+			public void mouseClicked(MouseEvent e)
+			{}
+
+			@Override
+			public void mouseEntered(MouseEvent e)
+			{}
+
+			@Override
+			public void mouseExited(MouseEvent e)
+			{}
+
+			@Override
+			public void mousePressed(MouseEvent e)
+			{
+				if (e.getButton() == 1)
+					leftMouse = true;
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e)
+			{
+				if (e.getButton() == 1)
+					leftMouse = false;
+			}
+		});
 
 		viewport.setBounds(0, 50, this.getWidth(), 400);
 		viewport.setFocusable(true);
 		viewport.setOpaque(false);
-		viewport.addMouseWheelListener(new ListenerMouseWheel());
+		viewport.addMouseWheelListener(listener);
 		viewport.setView(taskPanel);
 
 		if (baseFrame.data.getSize() > 0)
 			refreshTask();
 
-		JPanel topPanel = new JPanel();
 		topPanel.setBounds(0, 0, this.getWidth(), 50);
 		topPanel.setBackground(Color.white);
 		topPanel.setLayout(null);
 		topPanel.add(addButton);
 
-		JPanel bottomPanel = new JPanel();
 		bottomPanel.setBounds(0, 450, this.getWidth(), 50);
 		bottomPanel.setBackground(Color.white);
 		bottomPanel.setLayout(null);
@@ -106,7 +136,10 @@ public class MainPanel extends JPanel implements Update
 	{
 		addButton.setText(TextManager.getText(0));
 		settingButton.setText(TextManager.getText(1));
-		
+
+		topPanel.setBorder(BorderFactory.createMatteBorder(1, 1, 0, 1, baseFrame.getPrimaryColor()));
+		bottomPanel.setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, baseFrame.getSecondaryColor()));
+
 		if (field.isVisible() || baseFrame.data.getSize() >= maxTask)
 		{
 			field.grabFocus();
@@ -119,18 +152,18 @@ public class MainPanel extends JPanel implements Update
 
 		if (this.leftMouse)
 		{
-			int posX = baseFrame.getX();
-			int posY = baseFrame.getY();
-
-			if (init)
-			{
-				sourceX = (int) this.getMousePosition().getX();
-				sourceY = (int) this.getMousePosition().getY();
-				init = false;
-			}
-
 			try
 			{
+				int posX = baseFrame.getX();
+				int posY = baseFrame.getY();
+
+				if (init)
+				{
+					sourceX = (int) this.getMousePosition().getX();
+					sourceY = (int) this.getMousePosition().getY();
+					init = false;
+				}
+
 				int mouseX = (int) this.getMousePosition().getX();
 				int mouseY = (int) this.getMousePosition().getY();
 
@@ -141,7 +174,9 @@ public class MainPanel extends JPanel implements Update
 			}
 		}
 		else
+		{
 			init = true;
+		}
 	}
 
 	public void addTask()
@@ -199,8 +234,10 @@ public class MainPanel extends JPanel implements Update
 		g.fillRect((int) (viewport.getViewPosition().getY() / 630 * 280), 430, 20, 20);
 	}
 
-	private class ListenerAction implements ActionListener
+	private class MainListener implements ActionListener, KeyListener, MouseWheelListener
 	{
+		private int yPos = 0;
+
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
@@ -209,10 +246,7 @@ public class MainPanel extends JPanel implements Update
 			else if (e.getSource() == settingButton)
 				baseFrame.switchPanel(new SettingPanel(baseFrame));
 		}
-	}
 
-	private class ListenerKey implements KeyListener
-	{
 		@Override
 		public void keyPressed(KeyEvent e)
 		{
@@ -248,44 +282,6 @@ public class MainPanel extends JPanel implements Update
 		@Override
 		public void keyTyped(KeyEvent e)
 		{}
-	}
-
-	public class ListenerMouse implements MouseListener
-	{
-		@Override
-		public void mouseClicked(MouseEvent e)
-		{}
-
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{}
-
-		@Override
-		public void mouseExited(MouseEvent e)
-		{}
-
-		@Override
-		public void mousePressed(MouseEvent e)
-		{
-			if (e.getButton() == 1)
-				leftMouse = true;
-			if (e.getButton() == 3)
-			{
-				FrameManager.removeFrame(baseFrame);
-			}
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e)
-		{
-			if (e.getButton() == 1)
-				leftMouse = false;
-		}
-	}
-
-	public class ListenerMouseWheel implements MouseWheelListener
-	{
-		private int yPos = 0;
 
 		@Override
 		public void mouseWheelMoved(MouseWheelEvent e)

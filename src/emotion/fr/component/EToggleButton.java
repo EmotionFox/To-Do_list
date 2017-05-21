@@ -32,9 +32,9 @@ public class EToggleButton extends JToggleButton
 	protected void paintComponent(Graphics g)
 	{
 		Graphics2D g2d = (Graphics2D) g;
-		
+
 		g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-		
+
 		if (this.isSelected())
 			g2d.drawImage(imageOn, 0, 0, this.getWidth(), this.getHeight(), this);
 		else
